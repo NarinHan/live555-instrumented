@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #ifndef LOGGING_H
 #define LOGGING_H
 #include "logging.h"
@@ -51,12 +58,20 @@ OggFileParser::OggFileParser(OggFile& ourFile, FramedSource* inputSource,
     {  // Begin logged block
     fCurrentParseState = PARSING_START_OF_FILE;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     continueParsing();
   } else {
     {  // Begin logged block
     fCurrentParseState = PARSING_AND_DELIVERING_PAGES;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     // In this case, parsing (of page data) doesn't start until a client starts reading from a track.
   }
@@ -838,6 +853,10 @@ Boolean OggFileParser::parseAndDeliverPage() {
     {  // Begin logged block
     fCurrentParseState = DELIVERING_PACKET_WITHIN_PAGE;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
   saveParserState();
   return False;
@@ -958,6 +977,10 @@ Boolean OggFileParser::deliverPacketWithinPage() {
     {  // Begin logged block
     fCurrentParseState = PARSING_AND_DELIVERING_PAGES;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     return False;
   }
@@ -972,6 +995,10 @@ Boolean OggFileParser::deliverPacketWithinPage() {
     {  // Begin logged block
     fCurrentParseState = PARSING_AND_DELIVERING_PAGES;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
   }
   

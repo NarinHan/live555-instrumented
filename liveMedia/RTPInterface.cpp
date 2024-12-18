@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #ifndef LOGGING_H
 #define LOGGING_H
 #include "logging.h"
@@ -523,6 +530,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_STREAM_CHANNEL_ID;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
       } else {
 	// This character is part of a RTSP request or command, which is handled separately:
@@ -540,6 +551,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_SIZE1;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
       } else {
 	// This wasn't a stream channel id that we expected.  We're (somehow) in a strange state.  Try to recover:
@@ -549,6 +564,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_DOLLAR;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
       }
       break;
@@ -559,6 +578,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_SIZE2;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
       break;
     }
@@ -576,6 +599,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_PACKET_DATA;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
       break;
     }
@@ -584,6 +611,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_DOLLAR; // the next state, unless we end up having to read more data in the current state
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
       // Call the appropriate read handler to get the packet data from the TCP stream:
       RTPInterface* rtpInterface = lookupRTPInterface(fStreamChannelId);
@@ -599,6 +630,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_PACKET_DATA;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
 	  rtpInterface->fReadHandlerProc(rtpInterface->fOwner, mask);
 	} else {
@@ -617,6 +652,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
     {  // Begin logged block
     fTCPReadingState = AWAITING_PACKET_DATA;
     LOG_VAR_INT(fTCPReadingState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fTCPReadingState, prev);
+    prev = fTCPReadingState;
+} // End instrumented block
     }  // End logged block
 	    if (result == 1) {
 	      --rtpInterface->fNextTCPReadSize;

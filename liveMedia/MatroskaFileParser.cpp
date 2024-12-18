@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #ifndef LOGGING_H
 #define LOGGING_H
 #include "logging.h"
@@ -44,12 +51,20 @@ MatroskaFileParser::MatroskaFileParser(MatroskaFile& ourFile, FramedSource* inpu
     {  // Begin logged block
     fCurrentParseState = PARSING_START_OF_FILE;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     continueParsing();
   } else {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_CLUSTER;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     // In this case, parsing (of track data) doesn't start until a client starts reading from a track.
   }
@@ -93,6 +108,10 @@ void MatroskaFileParser::seekToTime(double& seekNPT) {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     // LATER handle "blockNumWithinCluster"; for now, we assume that it's 0 #####
   }
@@ -145,6 +164,10 @@ Boolean MatroskaFileParser::parse() {
     {  // Begin logged block
     fCurrentParseState = PARSING_CUES;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
 	    areDone = False;
 	  }
@@ -165,6 +188,10 @@ Boolean MatroskaFileParser::parse() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
 	  break;
 	}
@@ -216,6 +243,10 @@ Boolean MatroskaFileParser::parseStartOfFile() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_TRACKS;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
   skipHeader(size);
 
@@ -311,6 +342,10 @@ void MatroskaFileParser::lookForNextTrack() {
     {  // Begin logged block
     fCurrentParseState = PARSING_TRACK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
 	break;
       }
@@ -730,6 +765,10 @@ void MatroskaFileParser::lookForNextBlock() {
     {  // Begin logged block
     fCurrentParseState = PARSING_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
 	break;
       }
@@ -914,6 +953,10 @@ void MatroskaFileParser::parseBlock() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
       setParseState();
       return;
@@ -1017,6 +1060,10 @@ void MatroskaFileParser::parseBlock() {
     {  // Begin logged block
     fCurrentParseState = DELIVERING_FRAME_WITHIN_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     fCurOffsetWithinFrame = fNextFrameNumberToDeliver = 0;
     setParseState();
@@ -1030,6 +1077,10 @@ void MatroskaFileParser::parseBlock() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
 }
 
@@ -1171,6 +1222,10 @@ Boolean MatroskaFileParser::deliverFrameWithinBlock() {
     {  // Begin logged block
     fCurrentParseState = DELIVERING_FRAME_BYTES;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
       setParseState();
     }
@@ -1184,6 +1239,10 @@ Boolean MatroskaFileParser::deliverFrameWithinBlock() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
   return True;
 }
@@ -1232,11 +1291,19 @@ void MatroskaFileParser::deliverFrameBytes() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     } else {
     {  // Begin logged block
     fCurrentParseState = DELIVERING_FRAME_WITHIN_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
     }
 
@@ -1252,6 +1319,10 @@ void MatroskaFileParser::deliverFrameBytes() {
     {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
     LOG_VAR_INT(fCurrentParseState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fCurrentParseState, prev);
+    prev = fCurrentParseState;
+} // End instrumented block
     }  // End logged block
 }
 

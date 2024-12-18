@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #ifndef LOGGING_H
 #define LOGGING_H
 #include "logging.h"
@@ -300,6 +307,10 @@ char* SIPClient::invite1(Authenticator* authenticator) {
     {  // Begin logged block
     fInviteClientState = Calling;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
     fEventLoopStopFlag = 0;
     TaskScheduler& sched = envir().taskScheduler(); // abbrev.
@@ -387,6 +398,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Calling;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
 	if (!sendINVITE()) doInviteStateTerminated(0);
       } else {
@@ -401,6 +416,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Proceeding;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
 	} else if (responseCode >= 200 && responseCode <= 299) {
 	  doInviteStateTerminated(responseCode);
@@ -411,6 +430,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Completed;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
 	  fTimerD
 	    = sched.scheduleDelayedTask(32000000, timerDHandler, this);
@@ -425,6 +448,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Proceeding;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
       } else if (responseCode >= 200 && responseCode <= 299) {
 	doInviteStateTerminated(responseCode);
@@ -435,6 +462,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Completed;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
 	fTimerD = sched.scheduleDelayedTask(32000000, timerDHandler, this);
 	if (!sendACK()) doInviteStateTerminated(0);
@@ -450,6 +481,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Completed;
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
 	if (!sendACK()) doInviteStateTerminated(0);
       }
@@ -467,6 +502,10 @@ void SIPClient::doInviteStateTerminated(unsigned responseCode) {
     {  // Begin logged block
     fInviteClientState = Terminated; // FWIW...
     LOG_VAR_INT(fInviteClientState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fInviteClientState, prev);
+    prev = fInviteClientState;
+} // End instrumented block
     }  // End logged block
   if (responseCode < 200 || responseCode > 299) {
     // We failed, so return NULL;

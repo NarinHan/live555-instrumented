@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #ifndef LOGGING_H
 #define LOGGING_H
 #include "logging.h"
@@ -129,6 +136,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
     {  // Begin logged block
     fState = SAVING_AND_DELIVERING_FRAME;
     LOG_VAR_INT(fState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fState, prev);
+    prev = fState;
+} // End instrumented block
     }  // End logged block
 	    //	    fprintf(stderr, "\tdelivering\n");//#####
 	    fDesiredDataPCR = recordPCR; // use this frame's PCR
@@ -140,6 +151,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
     {  // Begin logged block
     fState = DELIVERING_SAVED_FRAME;
     LOG_VAR_INT(fState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fState, prev);
+    prev = fState;
+} // End instrumented block
     }  // End logged block
 	    fSavedSequentialIndexRecordNum = fNextIndexRecordNum;
 	    fDesiredDataPCR = recordPCR;
@@ -152,6 +167,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
     {  // Begin logged block
     fState = SKIPPING_FRAME;
     LOG_VAR_INT(fState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fState, prev);
+    prev = fState;
+} // End instrumented block
     }  // End logged block
 	}
       } else if (isNonIFrameStart(recordType)) {
@@ -162,6 +181,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
     {  // Begin logged block
     fState = DELIVERING_SAVED_FRAME;
     LOG_VAR_INT(fState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fState, prev);
+    prev = fState;
+} // End instrumented block
     }  // End logged block
 	  fSavedSequentialIndexRecordNum = fNextIndexRecordNum;
 	  fDesiredDataPCR = recordPCR;
@@ -173,6 +196,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
     {  // Begin logged block
     fState = SKIPPING_FRAME;
     LOG_VAR_INT(fState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fState, prev);
+    prev = fState;
+} // End instrumented block
     }  // End logged block
 	}
       } else {
@@ -200,6 +227,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
     {  // Begin logged block
     fState = SKIPPING_FRAME;
     LOG_VAR_INT(fState); // Auto-logged
+{ // Begin instrumented block
+    INSTRUMENT(fState, prev);
+    prev = fState;
+} // End instrumented block
     }  // End logged block
       } else {
 	// Continue delivering:
