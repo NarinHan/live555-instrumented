@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /* RTCP code taken directly from the most recent RTP specification:
  *     RFC 3550
  * Implementation

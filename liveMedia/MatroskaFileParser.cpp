@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
@@ -36,10 +41,16 @@ MatroskaFileParser::MatroskaFileParser(MatroskaFile& ourFile, FramedSource* inpu
     fPresentationTimeOffset(0.0) {
   if (ourDemux == NULL) {
     // Initialization
+    {  // Begin logged block
     fCurrentParseState = PARSING_START_OF_FILE;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     continueParsing();
   } else {
+    {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_CLUSTER;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     // In this case, parsing (of track data) doesn't start until a client starts reading from a track.
   }
 }
@@ -79,7 +90,10 @@ void MatroskaFileParser::seekToTime(double& seekNPT) {
     fprintf(stderr, "\t=> seek time %f, file position %llu, block number within cluster %d\n", seekNPT, clusterOffsetInFile, blockNumWithinCluster);
 #endif
     seekToFilePosition(clusterOffsetInFile);
+    {  // Begin logged block
     fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     // LATER handle "blockNumWithinCluster"; for now, we assume that it's 0 #####
   }
 }
@@ -128,7 +142,10 @@ Boolean MatroskaFileParser::parse() {
 	    fprintf(stderr, "Seeking to file position %llu (the previously-reported location of 'Cues')\n", fOurFile.fCuesOffset);
 #endif
 	    seekToFilePosition(fOurFile.fCuesOffset);
-	    fCurrentParseState = PARSING_CUES;
+    {  // Begin logged block
+    fCurrentParseState = PARSING_CUES;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
 	    areDone = False;
 	  }
 	  break;
@@ -145,7 +162,10 @@ Boolean MatroskaFileParser::parse() {
 #endif
 	    seekToFilePosition(fOurFile.fClusterOffset);
 	  }
-	  fCurrentParseState = LOOKING_FOR_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
 	  break;
 	}
         case LOOKING_FOR_BLOCK: {
@@ -193,7 +213,10 @@ Boolean MatroskaFileParser::parseStartOfFile() {
     fprintf(stderr, "MatroskaFileParser::parseStartOfFile(): Parsed id 0x%s (%s), size: %lld\n", id.hexString(), id.stringName(), size.val());
 #endif
 
-  fCurrentParseState = LOOKING_FOR_TRACKS;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_TRACKS;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
   skipHeader(size);
 
   return False; // because we have more parsing to do - inside the 'Track' header
@@ -285,7 +308,10 @@ void MatroskaFileParser::lookForNextTrack() {
 #endif
       case MATROSKA_ID_TRACKS: { // enter this, and move on to parsing 'Tracks'
 	fLimitOffsetInFile = fCurOffsetInFile + size.val(); // Make sure we don't read past the end of this header
-	fCurrentParseState = PARSING_TRACK;
+    {  // Begin logged block
+    fCurrentParseState = PARSING_TRACK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
 	break;
       }
       default: { // skip over this header
@@ -701,7 +727,10 @@ void MatroskaFileParser::lookForNextBlock() {
       case MATROSKA_ID_SIMPLEBLOCK:
       case MATROSKA_ID_BLOCK: { // 'SimpleBlock' or 'Block' header: enter this (and we're done)
 	fBlockSize = (unsigned)size.val();
-	fCurrentParseState = PARSING_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = PARSING_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
 	break;
       }
       case MATROSKA_ID_BLOCK_DURATION: { // 'Block Duration' header: get this value (but we currently don't do anything with it)
@@ -882,7 +911,10 @@ void MatroskaFileParser::parseBlock() {
 #ifdef DEBUG
       fprintf(stderr, "\tSkipped block for unused track number %d\n", fBlockTrackNumber);
 #endif
-      fCurrentParseState = LOOKING_FOR_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
       setParseState();
       return;
     }
@@ -982,7 +1014,10 @@ void MatroskaFileParser::parseBlock() {
     fprintf(stderr, " bytes\n");
 #endif
     // Next, start delivering these frames:
+    {  // Begin logged block
     fCurrentParseState = DELIVERING_FRAME_WITHIN_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     fCurOffsetWithinFrame = fNextFrameNumberToDeliver = 0;
     setParseState();
     return;
@@ -992,7 +1027,10 @@ void MatroskaFileParser::parseBlock() {
 #ifdef DEBUG
   fprintf(stderr, "parseBlock(): Error parsing data; trying to recover...\n");
 #endif
-  fCurrentParseState = LOOKING_FOR_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
 }
 
 Boolean MatroskaFileParser::deliverFrameWithinBlock() {
@@ -1130,7 +1168,10 @@ Boolean MatroskaFileParser::deliverFrameWithinBlock() {
       setParseState();
       FramedSource::afterGetting(demuxedTrack); // completes delivery
     } else { // normal case
-      fCurrentParseState = DELIVERING_FRAME_BYTES;
+    {  // Begin logged block
+    fCurrentParseState = DELIVERING_FRAME_BYTES;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
       setParseState();
     }
     return True;
@@ -1140,7 +1181,10 @@ Boolean MatroskaFileParser::deliverFrameWithinBlock() {
 #ifdef DEBUG
   fprintf(stderr, "deliverFrameWithinBlock(): Error parsing data; trying to recover...\n");
 #endif
-  fCurrentParseState = LOOKING_FOR_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
   return True;
 }
 
@@ -1185,9 +1229,15 @@ void MatroskaFileParser::deliverFrameBytes() {
     }
     if (fNextFrameNumberToDeliver == fNumFramesInBlock) {
       // We've delivered all of the frames from this block.  Look for another block next:
-      fCurrentParseState = LOOKING_FOR_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     } else {
-      fCurrentParseState = DELIVERING_FRAME_WITHIN_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = DELIVERING_FRAME_WITHIN_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     }
 
     setParseState();
@@ -1199,7 +1249,10 @@ void MatroskaFileParser::deliverFrameBytes() {
 #ifdef DEBUG
   fprintf(stderr, "deliverFrameBytes(): Error parsing data; trying to recover...\n");
 #endif
-  fCurrentParseState = LOOKING_FOR_BLOCK;
+    {  // Begin logged block
+    fCurrentParseState = LOOKING_FOR_BLOCK;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
 }
 
 void MatroskaFileParser

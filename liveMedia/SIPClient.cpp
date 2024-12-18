@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
@@ -292,7 +297,10 @@ char* SIPClient::invite1(Authenticator* authenticator) {
 
     // Before sending the "INVITE", arrange to handle any response packets,
     // and set up timers:
+    {  // Begin logged block
     fInviteClientState = Calling;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
     fEventLoopStopFlag = 0;
     TaskScheduler& sched = envir().taskScheduler(); // abbrev.
     sched.turnOnBackgroundReadHandling(fOurSocket->socketNum(),
@@ -376,7 +384,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
 	fTimerA
 	  = sched.scheduleDelayedTask(fTimerALen, timerAHandler, this);
 
-	fInviteClientState = Calling;
+    {  // Begin logged block
+    fInviteClientState = Calling;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
 	if (!sendINVITE()) doInviteStateTerminated(0);
       } else {
 	// Turn off timers A & B before moving to a new state:
@@ -387,14 +398,20 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
 	  envir().setResultMsg("No response from server");
 	  doInviteStateTerminated(0);
 	} else if (responseCode >= 100 && responseCode <= 199) {
-	  fInviteClientState = Proceeding;
+    {  // Begin logged block
+    fInviteClientState = Proceeding;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
 	} else if (responseCode >= 200 && responseCode <= 299) {
 	  doInviteStateTerminated(responseCode);
 	} else if (responseCode >= 400 && responseCode <= 499) {
 	  doInviteStateTerminated(responseCode);
 	      // this isn't what the spec says, but it seems right...
 	} else if (responseCode >= 300 && responseCode <= 699) {
-	  fInviteClientState = Completed;
+    {  // Begin logged block
+    fInviteClientState = Completed;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
 	  fTimerD
 	    = sched.scheduleDelayedTask(32000000, timerDHandler, this);
 	  if (!sendACK()) doInviteStateTerminated(0);
@@ -405,14 +422,20 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
 
     case Proceeding: {
       if (responseCode >= 100 && responseCode <= 199) {
-	fInviteClientState = Proceeding;
+    {  // Begin logged block
+    fInviteClientState = Proceeding;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
       } else if (responseCode >= 200 && responseCode <= 299) {
 	doInviteStateTerminated(responseCode);
       } else if (responseCode >= 400 && responseCode <= 499) {
 	doInviteStateTerminated(responseCode);
 	    // this isn't what the spec says, but it seems right...
       } else if (responseCode >= 300 && responseCode <= 699) {
-	fInviteClientState = Completed;
+    {  // Begin logged block
+    fInviteClientState = Completed;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
 	fTimerD = sched.scheduleDelayedTask(32000000, timerDHandler, this);
 	if (!sendACK()) doInviteStateTerminated(0);
       }
@@ -424,7 +447,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
 	envir().setResultMsg("Transaction terminated");
 	doInviteStateTerminated(0);
       } else if (responseCode >= 300 && responseCode <= 699) {
-	fInviteClientState = Completed;
+    {  // Begin logged block
+    fInviteClientState = Completed;
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
 	if (!sendACK()) doInviteStateTerminated(0);
       }
       break;
@@ -438,7 +464,10 @@ void SIPClient::doInviteStateMachine(unsigned responseCode) {
 }
 
 void SIPClient::doInviteStateTerminated(unsigned responseCode) {
-  fInviteClientState = Terminated; // FWIW...
+    {  // Begin logged block
+    fInviteClientState = Terminated; // FWIW...
+    LOG_VAR_INT(fInviteClientState); // Auto-logged
+    }  // End logged block
   if (responseCode < 200 || responseCode > 299) {
     // We failed, so return NULL;
     delete[] fInviteSDPDescription; fInviteSDPDescription = NULL;

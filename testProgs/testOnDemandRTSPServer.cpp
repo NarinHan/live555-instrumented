@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
@@ -65,7 +70,7 @@ int main(int argc, char** argv) {
 #endif
 
   // Create the RTSP server:
-  RTSPServer* rtspServer = RTSPServer::createNew(*env, 8554, authDB);
+  RTSPServer* rtspServer = RTSPServer::createNew(*env, atoi(argv[1]), authDB);
   if (rtspServer == NULL) {
     *env << "Failed to create RTSP server: " << env->getResultMsg() << "\n";
     exit(1);

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 #ifndef _NET_COMMON_H
 #include "NetCommon.h"
 #endif

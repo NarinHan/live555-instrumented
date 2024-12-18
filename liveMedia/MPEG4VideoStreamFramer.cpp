@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
@@ -171,7 +176,10 @@ MPEG4VideoStreamParser::~MPEG4VideoStreamParser() {
 }
 
 void MPEG4VideoStreamParser::setParseState(MPEGParseState parseState) {
-  fCurrentParseState = parseState;
+    {  // Begin logged block
+    fCurrentParseState = parseState;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
   MPEGVideoStreamParser::setParseState();
 }
 
